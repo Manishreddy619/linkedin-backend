@@ -9,6 +9,8 @@ import {
   genericErrorHandler,
 } from "./services/errorHandlers.js";
 
+import posts from './services/posts/index.js'
+
 const server = express();
 
 const port = process.env.PORT || 3001;
@@ -17,6 +19,7 @@ const port = process.env.PORT || 3001;
 
 server.use(cors());
 server.use(express.json());
+server.use('/posts',posts)
 
 // ************************* ROUTES ************************************
 
