@@ -146,5 +146,49 @@ profileUsersRouter.put(
 		}
 	},
 );
+profileUsersRouter.delete('/:userId', async (req, res, next) => {
+	try {
+		const user = await profileModel.findByIdAndDelete(req.params.userId);
+		res.send('deleted');
+	} catch (error) {}
+});
 
+profileUsersRouter.post(
+	'/:userId/picture',
+	parseFile.single('image'),
+	fileIsRequired,
+	async (req, res, next) => {
+		try {
+			const users = await profileModel.find();
+			const idExists = users.find(
+				(usr) => usr._id.toString() === req.params.userId.toString(),
+			);
+			console.log(idExists);
+			if (idExists) {
+				const user = await profileModel.findById(req.params.userId);
+				console.log(user, '-----------------------------------------------');
+				if (user) {
+					console.log(req.file.path);
+					const myImg = { image: req.file.path };
+					const updatedUser = { ...user, ...myImg };
+					console.log(updatedUser);
+					const modifiedProfile = await profileModel.findByIdAndUpdate(
+						req.params.userId,
+						updatedUser,
+						{
+							new: true,
+						},
+					);
+					res.send(modifiedProfile);
+				} else {
+					next(createHttpError(404, `id not found ${req.params.userId}`));
+				}
+			} else {
+				next(createHttpError(404, `id not found ${req.params.userId}`));
+			}
+		} catch (error) {
+			next(error);
+		}
+	},
+);
 export default profileUsersRouter;
