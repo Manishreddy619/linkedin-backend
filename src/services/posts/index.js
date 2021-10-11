@@ -145,14 +145,20 @@ posts.get('/:postId/comment',async(req,res,next)=>{
         const post=await postModel.findById(postId)
         const username=post.username
         const comments=await commentModel.find({'postWithUser.user.username':username})
-        // 
-        // 
-        //console.log(comments.postWithUser.user.ObjectId)
-        //findById({'postWithUser.user._id':postId})
-        //commentModel.find({postWithUser:{user:{ObjectId:postId}}})
-        //const obj=comments.postWithUser.user._id
-        //console.log(obj)
         res.send(comments)
+    } catch (error) {
+        next(error)
+    }
+})
+posts.put('/:postId/comment/:commentId',async(req,res,next)=>{
+    try {
+        const commentId=req.params.commentId
+        const modifiedComment=await commentModel.findByIdAndUpdate(commentId,req.body,{new:true})
+        if(modifiedComment){
+            res.send(modifiedComment)
+        }else{
+            next(createHttpError(404,`COMMENT ID${commentId} NOT FOUND`))
+        }
     } catch (error) {
         next(error)
     }
