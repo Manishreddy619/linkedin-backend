@@ -163,5 +163,18 @@ posts.put('/:postId/comment/:commentId',async(req,res,next)=>{
         next(error)
     }
 })
+posts.delete('/:postId/comment/:commentId',async(req,res,next)=>{
+    try {
+        const commentId=req.params.commentId
+        const deletedComment=await commentModel.findByIdAndDelete(commentId)
+        if(deletedComment){
+            res.send([`COMMENT ID${commentId} IS GONE`,deletedComment])
+        }else{
+            next(createHttpError(404,`COMMENT ID${commentId} NOT FOUND`))
+        }
+    } catch (error) {
+        next(error)
+    }
+})
 
 export default posts
