@@ -4,10 +4,14 @@ import listEndpoints from 'express-list-endpoints';
 import cors from 'cors';
 
 import {
-	notFoundHandler,
-	badRequestHandler,
-	genericErrorHandler,
+	badrequest,
+	serverside,
+	notfound,
+	forbiden,
+	unauther,
 } from './services/errorHandlers.js';
+
+import profileUsersRouter from './services/profiles/index.js';
 
 const server = express();
 
@@ -19,12 +23,14 @@ server.use(cors());
 server.use(express.json());
 
 // ************************* ROUTES ************************************
-
+server.use('/user', profileUsersRouter);
 // ************************** ERROR HANDLERS ***************************
 
-server.use(notFoundHandler);
-server.use(badRequestHandler);
-server.use(genericErrorHandler);
+server.use(unauther);
+server.use(badrequest);
+server.use(notfound);
+server.use(forbiden);
+server.use(serverside);
 
 mongoose.connect(process.env.MONGO_CONNECTION); //mongodb+srv://manish:mani@cluster0.jo5x0.mongodb.net/test
 
