@@ -1,8 +1,12 @@
+
 import express from "express";
 import mongoose from "mongoose";
 import listEndpoints from "express-list-endpoints";
 import cors from "cors";
 import experienceRoutes from "./services/profiles/index.js";
+
+import profileRouter from './services/profiles/index.js';
+
 import {
   notFoundHandler,
   badRequestHandler,
@@ -10,6 +14,8 @@ import {
 } from "./services/errorHandlers.js";
 
 import posts from './services/posts/index.js'
+
+
 
 const server = express();
 
@@ -20,6 +26,8 @@ const port = process.env.PORT || 3001;
 server.use(cors());
 server.use(express.json());
 server.use('/posts',posts)
+server.use("/profiles", experienceRoutes);
+server.use('/profile', profileRouter)
 
 // ************************* ROUTES ************************************
 
@@ -29,7 +37,11 @@ server.use(notFoundHandler);
 server.use(badRequestHandler);
 server.use(genericErrorHandler);
 ///skchskjdcb
-server.use("/profiles", experienceRoutes);
+
+
+
+
+
 mongoose.connect(process.env.MONGO_CONNECTION); //mongodb+srv://manish:mani@cluster0.jo5x0.mongodb.net/test
 
 mongoose.connection.on("connected", () => {
