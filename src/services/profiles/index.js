@@ -5,7 +5,8 @@ import { parseFile } from '../cloudinary.js';
 import { profileValidator } from './profileValidation.js';
 import { fileIsRequired } from '../validationfileType.js';
 import profileModel from './profileSchema.js';
-
+import { getPdfReadableStream } from './pdf.js';
+import { pipeline } from 'stream';
 const profileUsersRouter = express.Router();
 
 profileUsersRouter.post(
@@ -191,4 +192,30 @@ profileUsersRouter.post(
 		}
 	},
 );
+profileUsersRouter.get('/:userId/cv', async (req, res, next) => {
+	try {
+		const users = await profileModel.find();
+		const currentProfile = users.find(
+			(user) => user._id.toString() === req.params.userId.toString(),
+		);
+		console.log(currentProfile);
+		if (!currentProfile) {
+			res
+				.status(404)
+				.send({ message: `blog with ${req.params.id} is not found!` });
+		}
+		res.setHeader(
+			'Content-Disposition',
+			`attachment; filename = application.pdf`,
+		);
+		const source = await getPdfReadableStream(currentProfile);
+		const destination = res;
+		pipeline(source, destination, (err) => {
+			if (err) next(err);
+		});
+	} catch (error) {
+		next(error);
+	}
+});
+
 export default profileUsersRouter;
