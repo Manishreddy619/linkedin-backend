@@ -28,6 +28,8 @@ posts.post('/',async(req,res,next)=>{
             const post= new postModel(myObj)
             const{_id}=await post.save()
             res.send(_id)
+        }else{
+            next(createHttpError(404,`PROFILE NAMED ${req.body.username} NOT FOUND`))
         }
     } catch (error) {
         next(error)
@@ -92,19 +94,26 @@ posts.post('/:postId',multer({storage:storage}).single('post'),async(req,res,nex
     try {
         const postId=req.params.postId
         const postWithImage=await postModel.findByIdAndUpdate(postId,{image:req.file.path},{new:true})
-        res.send(postWithImage)
+        if(postWithImage){
+            res.send(postWithImage)
+        }else{
+            next(createHttpError(404,`POST ID${postId}NOT FOUND`))
+        }
     } catch (error) {
         next(error)
     }
 })
-// EXTRA: GET USER WITH THE POSTS (in normal get I'm retriving POSTS with USER OBJ nested inside)
+// EXTRA CREATIVE: GET USER WITH THE POSTS (in normal get I'm retriving POSTS with USER OBJ nested inside)
 posts.get('/:userName/userwithposts',async(req,res,next)=>{
     try {
-        //const username=req.params.userName
         const user=await profileModel.find({username:req.params.userName})
-        const posts=await postModel.find({username:req.params.userName},'text username image createdAt updatedAt')
-        const userAndPosts={user,posts}
-        res.send(userAndPosts)
+        if(user==!undefined){
+            const posts=await postModel.find({username:req.params.userName},'text username image createdAt updatedAt')
+            const userAndPosts={user,posts}
+            res.send(userAndPosts)
+        }else{
+            next(createHttpError(404,`USER NAMED ${req.params.userName} NOT FOUND`))
+        }
     } catch (error) {
         next(error)
     }
