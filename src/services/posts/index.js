@@ -16,14 +16,6 @@ cloudinary.config({
 })
 const storage=new CloudinaryStorage({cloudinary,params:{folder:'posts'}})
 
-posts.get('/',async(req,res,next)=>{
-    try {
-        const posts=await postModel.find()
-        res.send(posts)
-    } catch (error) {
-        next(error)
-    }
-})
 posts.post('/',async(req,res,next)=>{
     try {
         const profile=await profileModel.findOne({username:req.body.username})
@@ -37,6 +29,14 @@ posts.post('/',async(req,res,next)=>{
             const{_id}=await post.save()
             res.send(_id)
         }
+    } catch (error) {
+        next(error)
+    }
+})
+posts.get('/',async(req,res,next)=>{
+    try {
+        const posts=await postModel.find()
+        res.send(posts)
     } catch (error) {
         next(error)
     }
@@ -81,12 +81,24 @@ posts.delete('/:postId',async(req,res,next)=>{
         next(error)
     }
 })
-
+// UPLOAD AN IMAGE FILE
 posts.post('/:postId',multer({storage:storage}).single('post'),async(req,res,next)=>{
     try {
         const postId=req.params.postId
         const postWithImage=await postModel.findByIdAndUpdate(postId,{image:req.file.path},{new:true})
         res.send(postWithImage)
+    } catch (error) {
+        next(error)
+    }
+})
+// EXTRA: GET USER WITH THE POSTS (in normal get I'm retriving POSTS with USER OBJ nested inside)
+posts.get('/:userName/userwithposts',async(req,res,next)=>{
+    try {
+        //const username=req.params.userName
+        const user=await profileModel.find({username:req.params.userName})
+        const posts=await postModel.find({username:req.params.userName},'text username image createdAt updatedAt')
+        const userAndPosts={user,posts}
+        res.send(userAndPosts)
     } catch (error) {
         next(error)
     }
