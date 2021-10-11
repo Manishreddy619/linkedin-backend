@@ -10,9 +10,9 @@ import profileModel from "./profileSchema.js"
 
 const profileRouter = express.Router()
 
-const experienceRoutes = express.Router();
+//const experienceRoutes = express.Router();
 
-experienceRoutes.post("/:profileName/experiences", async (req, res, next) => {
+profileRouter.post("/:profileName/experiences", async (req, res, next) => {
   try {
     const getPName = await profile.findById(req.params.profileName);
     if (getPName) {
@@ -30,7 +30,7 @@ experienceRoutes.post("/:profileName/experiences", async (req, res, next) => {
     console.log(error);
   }
 });
-experienceRoutes.get("/:profileName/experiences", async (req, res, next) => {
+profileRouter.get("/:profileName/experiences", async (req, res, next) => {
   try {
     const getPName = await profile.findById(req.params.profileName);
     if (getPName) {
@@ -42,7 +42,7 @@ experienceRoutes.get("/:profileName/experiences", async (req, res, next) => {
     }
   } catch (error) {}
 });
-experienceRoutes.get(
+profileRouter.get(
   "/:profileName/experiences/:exId",
   async (req, res, next) => {
     try {
@@ -66,7 +66,7 @@ experienceRoutes.get(
     }
   }
 );
-experienceRoutes.put(
+profileRouter.put(
   "/:profileName/experiences/:exId",
   async (req, res, next) => {
     try {
@@ -91,12 +91,12 @@ experienceRoutes.put(
     }
   }
 );
-experienceRoutes.delete(
+profileRouter.delete(
   "/:profileName/experiences/:exId",
   async (req, res, next) => {}
 );
 
-export default experienceRoutes;
+//export default experienceRoutes;
 
 
 

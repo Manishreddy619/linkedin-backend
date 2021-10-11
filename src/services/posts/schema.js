@@ -6,7 +6,7 @@ const postSchema=new Schema({
     text:{type:String,required:true},
     username:{type:String,required:true},
     image:{type:String,required:true},
-    user:{type:Object}
+    user:{type:Schema.Types.ObjectId,ref:'profile'}
 },{timestamps:true})
 
 export default model('post',postSchema)
