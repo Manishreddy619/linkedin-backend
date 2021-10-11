@@ -48,5 +48,18 @@ posts.put('/:postId',async(req,res,next)=>{
         next(error)
     }
 })
+posts.delete('/:postId',async(req,res,next)=>{
+    try {
+        const postId=req.params.postId
+        const deletedPost=await postModel.findByIdAndDelete(postId)
+        if(deletedPost){
+            res.send([`POST ID${postId} IS GONE`,deletedPost])
+        }else{
+            next(createHttpError(404,`POST ID${postId}NOT FOUND`))
+        }
+    } catch (error) {
+        next(error)
+    }
+})
 
 export default posts
