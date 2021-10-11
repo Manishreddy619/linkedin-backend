@@ -1,6 +1,7 @@
 import express from 'express'
 import postModel from './schema.js'
 import createHttpError from 'http-errors'
+//import profileModel from '../profiles/profileSchema.js'
 
 const posts=express.Router()
 

@@ -3,7 +3,7 @@ import express from "express";
 import mongoose from "mongoose";
 import listEndpoints from "express-list-endpoints";
 import cors from "cors";
-import experienceRoutes from "./services/profiles/index.js";
+//import experienceRoutes from "./services/profiles/index.js";
 
 import profileRouter from './services/profiles/index.js';
 
@@ -26,7 +26,7 @@ const port = process.env.PORT || 3001;
 server.use(cors());
 server.use(express.json());
 server.use('/posts',posts)
-server.use("/profiles", experienceRoutes);
+//server.use("/profiles", experienceRoutes);
 server.use('/profile', profileRouter)
 
 // ************************* ROUTES ************************************
