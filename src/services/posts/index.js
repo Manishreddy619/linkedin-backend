@@ -1,13 +1,16 @@
 import express from 'express'
 import postModel from './schema.js'
 import createHttpError from 'http-errors'
-//import profileModel from '../profiles/profileSchema.js'
+import profileModel from '../profiles/profileSchema.js'
+import q2m from 'query-to-mongo'
 
 const posts=express.Router()
 
 posts.get('/',async(req,res,next)=>{
     try {
+        //const mQ=q2m(req.query)
         const posts=await postModel.find()
+            //mQ.criteria,mQ.options.fields).populate({path:'user'})
         res.send(posts)
     } catch (error) {
         next(error)
@@ -15,9 +18,18 @@ posts.get('/',async(req,res,next)=>{
 })
 posts.post('/',async(req,res,next)=>{
     try {
-        const newPost=new postModel(req.body)
-        const{_id}=await newPost.save()
-        res.send(_id)
+        const profile=await profileModel.findOne({username:req.body.username})
+        console.log(profile)
+        if(profile){
+            const{text,username,image,user}=req.body
+            const myObj= {
+                text,username,image,
+                user:profile
+            }
+            const post= new postModel(myObj)
+            const{_id}=await post.save()
+            res.send(_id)
+        }
     } catch (error) {
         next(error)
     }
