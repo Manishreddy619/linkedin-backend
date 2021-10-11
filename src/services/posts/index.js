@@ -139,6 +139,23 @@ posts.post('/:postId/comment',async(req,res,next)=>{
         next(error)
     }
 })
-
+posts.get('/:postId/comment',async(req,res,next)=>{
+    try {
+        const postId=req.params.postId
+        const post=await postModel.findById(postId)
+        const username=post.username
+        const comments=await commentModel.find({'postWithUser.user.username':username})
+        // 
+        // 
+        //console.log(comments.postWithUser.user.ObjectId)
+        //findById({'postWithUser.user._id':postId})
+        //commentModel.find({postWithUser:{user:{ObjectId:postId}}})
+        //const obj=comments.postWithUser.user._id
+        //console.log(obj)
+        res.send(comments)
+    } catch (error) {
+        next(error)
+    }
+})
 
 export default posts
