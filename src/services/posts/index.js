@@ -6,6 +6,7 @@ import q2m from 'query-to-mongo'
 import multer from 'multer'
 import {v2 as cloudinary} from 'cloudinary'
 import {CloudinaryStorage} from 'multer-storage-cloudinary'
+import commentModel from './commentSchema.js'
 
 const posts=express.Router()
 const{CLOUDINARY_NAME,CLOUDINARY_KEY,CLOUDINARY_SECRET}=process.env
@@ -113,6 +114,26 @@ posts.get('/:userName/userwithposts',async(req,res,next)=>{
             res.send(userAndPosts)
         }else{
             next(createHttpError(404,`USER NAMED ${req.params.userName} NOT FOUND`))
+        }
+    } catch (error) {
+        next(error)
+    }
+})
+// COMMENTS
+posts.post('/:postId/comment',async(req,res,next)=>{
+    try {
+        const post=await postModel.findById(req.params.postId)
+        if(post){
+            const{comment}=req.body
+            const commentWithInfo={
+                comment,
+                postWithUser:post // BECAUSE OUR POSTS CONTAIN USER INFO YET !
+            }
+            const newComment=new commentModel(commentWithInfo)
+            const{_id}=await newComment.save()
+            res.send(newComment)
+        }else{
+            next(createHttpError(404,`POST WITH ID${req.params.postId} NOT FOUND`))
         }
     } catch (error) {
         next(error)
