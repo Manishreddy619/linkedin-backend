@@ -2,12 +2,15 @@ import express from 'express';
 import mongoose from 'mongoose';
 import listEndpoints from 'express-list-endpoints';
 import cors from 'cors';
+import profileRouter from './services/profiles/index.js';
 
 import {
 	notFoundHandler,
 	badRequestHandler,
 	genericErrorHandler,
 } from './services/errorHandlers.js';
+
+
 
 const server = express();
 
@@ -25,6 +28,9 @@ server.use(express.json());
 server.use(notFoundHandler);
 server.use(badRequestHandler);
 server.use(genericErrorHandler);
+
+
+server.use('/profile', profileRouter)
 
 mongoose.connect(process.env.MONGO_CONNECTION); //mongodb+srv://manish:mani@cluster0.jo5x0.mongodb.net/test
 
