@@ -9,7 +9,7 @@ import {
   genericErrorHandler,
 } from "./services/errorHandlers.js";
 
-import posts from './services/posts/index.js'
+import posts from "./services/posts/index.js";
 
 const server = express();
 
@@ -19,17 +19,16 @@ const port = process.env.PORT || 3001;
 
 server.use(cors());
 server.use(express.json());
-server.use('/posts',posts)
+server.use("/posts", posts);
 
 // ************************* ROUTES ************************************
-
+server.use("/profiles", experienceRoutes);
 // ************************** ERROR HANDLERS ***************************
 
 server.use(notFoundHandler);
 server.use(badRequestHandler);
 server.use(genericErrorHandler);
-///skchskjdcb
-server.use("/profiles", experienceRoutes);
+
 mongoose.connect(process.env.MONGO_CONNECTION); //mongodb+srv://manish:mani@cluster0.jo5x0.mongodb.net/test
 
 mongoose.connection.on("connected", () => {
