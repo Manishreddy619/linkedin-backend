@@ -2,7 +2,7 @@ import express from 'express'
 import postModel from './schema.js'
 import createHttpError from 'http-errors'
 import profileModel from '../profiles/profileSchema.js'
-//import q2m from 'query-to-mongo'
+import q2m from 'query-to-mongo'
 import multer from 'multer'
 import {v2 as cloudinary} from 'cloudinary'
 import {CloudinaryStorage} from 'multer-storage-cloudinary'
@@ -35,8 +35,14 @@ posts.post('/',async(req,res,next)=>{
 })
 posts.get('/',async(req,res,next)=>{
     try {
-        const posts=await postModel.find()
-        res.send(posts)
+        const mQ=q2m(req.query)
+        const totalPosts=await postModel.countDocuments(mQ.criteria)
+        const posts=await postModel
+            .find(mQ.criteria,mQ.options.fields)
+            .sort(mQ.options.sort)
+            .skip(mQ.options.skip)
+            .limit(mQ.options.limit||10).sort(mQ.options.sort)
+        res.send({links:mQ.links('/posts',totalPosts),totalPosts,pageTotal:Math.ceil(totalPosts/mQ.options.limit),posts})
     } catch (error) {
         next(error)
     }
