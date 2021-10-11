@@ -21,5 +21,18 @@ posts.post('/',async(req,res,next)=>{
         next(error)
     }
 })
+posts.get('/:postId',async(req,res,next)=>{
+    try {
+        const postId=req.params.postId
+        const post=await postModel.findById(postId)
+        if(post){
+            res.send(post)
+        }else{
+            next(createHttpError(404,`POST ID${postId} NOT FOUND`))
+        }
+    } catch (error) {
+        next(error)
+    }
+})
 
 export default posts
