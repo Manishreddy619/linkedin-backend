@@ -34,5 +34,19 @@ posts.get('/:postId',async(req,res,next)=>{
         next(error)
     }
 })
+posts.put('/:postId',async(req,res,next)=>{
+    try {
+        const postId=req.params.postId
+        const modifiedPost=await postModel.findByIdAndUpdate(postId,req.body,{new:true})
+        if(modifiedPost){
+            res.send(modifiedPost)
+        }else{
+            next(createHttpError(404,`POST ID${postId} NOT FOUND`))
+        }
+
+    } catch (error) {
+        next(error)
+    }
+})
 
 export default posts
