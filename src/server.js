@@ -8,7 +8,7 @@ import {
   badRequestHandler,
   genericErrorHandler,
 } from "./services/errorHandlers.js";
-
+import profileRouter from "./services/profiles/profileSchema.js";
 import posts from "./services/posts/index.js";
 
 const server = express();
@@ -21,6 +21,8 @@ server.use(cors());
 server.use(express.json());
 server.use("/posts", posts);
 
+server.use("/profiles", profileRouter);
+
 // ************************* ROUTES ************************************
 server.use("/profiles", experienceRoutes);
 // ************************** ERROR HANDLERS ***************************
@@ -28,6 +30,7 @@ server.use("/profiles", experienceRoutes);
 server.use(notFoundHandler);
 server.use(badRequestHandler);
 server.use(genericErrorHandler);
+///skchskjdcb
 
 mongoose.connect(process.env.MONGO_CONNECTION); //mongodb+srv://manish:mani@cluster0.jo5x0.mongodb.net/test
 
