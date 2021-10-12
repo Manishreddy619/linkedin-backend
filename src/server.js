@@ -20,8 +20,23 @@ const server = express();
 const port = process.env.PORT || 3001;
 
 // ************************* MIDDLEWARES ********************************
+const whitelist = [process.env.FE_DEV_URL, process.env.FE_PROD_URL]; // we are allowing local FE and the deployed FE to access to our API
 
-server.use(cors());
+console.log(whitelist);
+
+const corsOpts = {
+	origin: function (origin, next) {
+		console.log('CURRENT ORIGIN: ', origin);
+		if (!origin || whitelist.indexOf(origin) !== -1) {
+			// if received origin is in the whitelist we are going to allow that request
+			next(null, true);
+		} else {
+			// if it is not, we are going to reject that request
+			next(new Error(`Origin ${origin} not allowed!`));
+		}
+	},
+};
+server.use(cors(corsOpts));
 server.use(express.json());
 server.use('/posts', posts);
 //server.use("/profiles", experienceRoutes);
