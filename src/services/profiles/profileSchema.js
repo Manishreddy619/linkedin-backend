@@ -16,6 +16,7 @@ const profileUserSchema = new Schema(
 		area: { type: String, required: true },
 		username: { type: String, required: true },
 		image: { type: String, required: true },
+		experiences: [{ type: Object }],
 	},
 	{
 		timestamps: true,
