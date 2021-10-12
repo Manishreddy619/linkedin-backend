@@ -8,23 +8,35 @@ import profileModel from './profileSchema.js';
 import { getPdfReadableStream } from './pdf.js';
 import { pipeline } from 'stream';
 
+import experienceModel from './experienceSchema.js';
 const profileRouter = express.Router();
 
 //const experienceRoutes = express.Router();
 
 profileRouter.post('/:profileName/experiences', async (req, res, next) => {
 	try {
-		const getPName = await profileModel.findById(req.params.profileName);
-		if (getPName) {
-			const user = { ...getPName.toObject() };
-			const exp = await experience.create(req.body, {
-				$push: { userName: user.userName },
-			});
-			res.status(201).send(exp);
-		} else {
-			res
-				.status(401)
-				.send(`the profile name with ${req.params.profileName} was not found.`);
+		const users = await profileModel.find();
+		if (users) {
+			const getPname = users.find(
+				(usr) => usr.username === req.params.profileName,
+			);
+			console.log(getPname);
+			if (getPname) {
+				const myObj = {
+					...req.body,
+					username: req.params.profileName,
+				};
+
+				const newExperience = new experienceModel(myObj);
+				const { _id } = await newExperience.save();
+				res.status(201).send(_id);
+			} else {
+				res
+					.status(401)
+					.send(
+						`the profile name with ${req.params.profileName} was not found.`,
+					);
+			}
 		}
 	} catch (error) {
 		console.log(error);
@@ -32,23 +44,42 @@ profileRouter.post('/:profileName/experiences', async (req, res, next) => {
 });
 profileRouter.get('/:profileName/experiences', async (req, res, next) => {
 	try {
-		const getPName = await profileModel.findById(req.params.profileName);
-		if (getPName) {
-			res.status(201).send(getPName);
-		} else {
-			res
-				.status(401)
-				.send(`the profile name with ${req.params.profileName} was not found.`);
+		const users = await profileModel.find();
+		if (users) {
+			const userExists = users.find(
+				(usr) => usr.username === req.params.profileName,
+			);
+			if (userExists) {
+				const userExperiences = await experienceModel.find();
+				if (userExperiences) {
+					const experiences = userExperiences.filter(
+						(ex) => ex.username === req.params.profileName,
+					);
+					res.send(experiences);
+				} else {
+					res.send(`profilename  ${req.params.profileName} not found`);
+				}
+			} else {
+				res.send(`profilename  ${req.params.profileName} not found`);
+			}
 		}
-	} catch (error) {}
+	} catch (error) {
+		next(error);
+	}
 });
 profileRouter.get('/:profileName/experiences/:exId', async (req, res, next) => {
 	try {
-		const getPName = await profileModel.findById(req.params.profileName);
+		const getPName = await profileModel.find();
 		if (getPName) {
-			const getExperience = await experience.findById(req.params.exId);
-			if (getExperience) {
-				res.status(200).send(getExperience);
+			const user = getPName.find(
+				(usr) => usr.username === req.params.profileName,
+			);
+
+			if (user) {
+				const exp = await experienceModel.findById(req.params.exId);
+				if (exp) {
+					res.status(200).send(exp);
+				}
 			} else {
 				res.send(`experience id with ${req.params.exId} not found`);
 			}
@@ -63,15 +94,24 @@ profileRouter.get('/:profileName/experiences/:exId', async (req, res, next) => {
 });
 profileRouter.put('/:profileName/experiences/:exId', async (req, res, next) => {
 	try {
-		const getPName = await profileModel.findById(req.params.profileName);
+		const getPName = await profileModel.find();
 		if (getPName) {
-			const updateExperience = await experience.findByIdAndUpdate(
-				req.params.exId,
-				req.body,
-				{ new: true },
+			const user = getPName.find(
+				(usr) => usr.username === req.params.profileName,
 			);
 
-			res.status(201).send(updateExperience);
+			if (user) {
+				const updateExp = await experienceModel.findByIdAndUpdate(
+					req.params.exId,
+					req.body,
+					{ new: true },
+				);
+				if (updateExp) {
+					res.status(200).send(updateExp);
+				}
+			} else {
+				res.send(`experience id with ${req.params.exId} not found`);
+			}
 		} else {
 			res
 				.status(401)
@@ -81,7 +121,20 @@ profileRouter.put('/:profileName/experiences/:exId', async (req, res, next) => {
 		console.log(error);
 	}
 });
-
+profileRouter.delete('/:userName/experiences/:exId', async (req, res, next) => {
+	try {
+		const getUser = await profile.find();
+		if (getUser) {
+			const user = getUser.find(
+				(usr) => usr.username === req.params.profileName,
+			);
+			if (user) {
+				const delExp = await experience.findByIdAndDelete(req.params.exId);
+				res.send('exp deleted');
+			}
+		}
+	} catch (error) {}
+});
 //export default experienceRoutes;
 
 profileRouter.post(
