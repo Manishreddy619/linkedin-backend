@@ -44,7 +44,7 @@ posts.get('/',async(req,res,next)=>{
             .find(mQ.criteria,mQ.options.fields)
             .sort(mQ.options.sort)
             .skip(mQ.options.skip)
-            .limit(mQ.options.limit||10).sort(mQ.options.sort)
+            .limit(mQ.options.limit).sort(mQ.options.sort)
         res.send({links:mQ.links('/posts',totalPosts),totalPosts,pageTotal:Math.ceil(totalPosts/mQ.options.limit),posts})
     } catch (error) {
         next(error)
