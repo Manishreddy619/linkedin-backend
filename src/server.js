@@ -15,6 +15,7 @@ import {
 } from './services/errorHandlers.js';
 
 import posts from './services/posts/index.js';
+import profileRouter from './services/profiles/index.js';
 
 const server = express();
 
@@ -37,7 +38,6 @@ server.use(badrequest);
 server.use(notfound);
 server.use(forbiden);
 server.use(serverside);
-///skchskjdcb
 
 mongoose.connect(process.env.MONGO_CONNECTION); //mongodb+srv://manish:mani@cluster0.jo5x0.mongodb.net/test
 
