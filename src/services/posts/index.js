@@ -176,5 +176,36 @@ posts.delete('/:postId/comment/:commentId',async(req,res,next)=>{
         next(error)
     }
 })
+// LIKES
+posts.post('/:postId/like',async(req,res,next)=>{
+    try {
+        const{id}=req.body
+        const isLiked=await postModel.findOne({_id:req.params.postId,likes:id})
+        if(isLiked){
+            await postModel.findByIdAndUpdate(req.params.postId,{$pull:{likes:id}})
+            res.send('UNLIKED')
+        }else{
+            await postModel.findByIdAndUpdate(req.params.postId,{$push:{likes:id}})
+            res.send('LIKED')
+        }
+    } catch (error) {
+        next(error)
+    }
+})
+// UNNECESSARY ROUTE FOR LIKE DELETE (because I'm managing UNLIKED with previous one)
+posts.delete('/:postId/like',async(req,res,next)=>{
+    try {
+        const{id}=req.body
+        const isLiked=await postModel.findOne({_id:req.params.postId,likes:id})
+        if(isLiked){
+            await postModel.findByIdAndUpdate(req.params.postId,{$pull:{likes:id}})
+            res.send('LIKE DELETED')
+        }else{
+            res.send(`THIS POST IS NOT LIKED YET FROM USER ID ${id}` )
+        }
+    } catch (error) {
+        
+    }
+})
 
 export default posts

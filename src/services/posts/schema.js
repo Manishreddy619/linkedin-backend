@@ -8,7 +8,7 @@ const postSchema = new Schema(
 		username: { type: String, required: true },
 		image: { type: String, required: true },
 		user: { type: Object },
-		//user:{type:Schema.Types.ObjectId,ref:'profile'}
+		likes:{default:[],type:[{type:mongoose.Schema.Types.ObjectId,ref:'profile'}]}
 	},
 	{ timestamps: true },
 );
