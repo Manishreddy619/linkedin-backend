@@ -2,13 +2,13 @@ import express from "express";
 import mongoose from "mongoose";
 import listEndpoints from "express-list-endpoints";
 import cors from "cors";
-import experienceRoutes from "./services/profiles/index.js";
+
 import {
   notFoundHandler,
   badRequestHandler,
   genericErrorHandler,
 } from "./services/errorHandlers.js";
-import profileRouter from "./services/profiles/profileSchema.js";
+import profileRouter from "./services/profiles/index.js";
 import posts from "./services/posts/index.js";
 
 const server = express();
@@ -24,7 +24,7 @@ server.use("/posts", posts);
 server.use("/profiles", profileRouter);
 
 // ************************* ROUTES ************************************
-server.use("/profiles", experienceRoutes);
+
 // ************************** ERROR HANDLERS ***************************
 
 server.use(notFoundHandler);

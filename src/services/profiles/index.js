@@ -3,7 +3,6 @@ import express from "express";
 import experience from "./experienceSchema.js";
 import profile from "./profileSchema.js";
 import createHttpError from "http-errors";
-import profileModel from "./profileSchema.js";
 
 const profileRouter = express.Router();
 
@@ -41,21 +40,23 @@ profileRouter.get("/:userName/experiences", async (req, res, next) => {
   try {
     const getPName = await experience.find();
     if (getPName) {
-      const user = getPName.find((usr) => usr.username === req.params.userName);
-      if (user) {
-        res.status(201).send(getPName);
-      } else {
-        next(
-          createHttpError(
-            404,
-            `user with username ${req.params.userName} not found!`
-          )
-        );
-      }
+      const filteredexps = getPName.filter(
+        (uname) => uname.username === req.params.userName
+      );
+      res.status(201).send(filteredexps);
+      //   const user = getPName.find((usr) => usr.username === req.params.userName);
+      //   if (user) {
+      //     res.status(201).send(getPName);
+      //   } else {
+      //     next(
+      //       createHttpError(
+      //         404,
+      //         `user with username ${req.params.userName} not found!`
+      //       )
+      //     );
+      //   }
     } else {
-      res
-        .status(401)
-        .send(`the profile name with ${req.params.userName} was not found.`);
+      res.send("not found");
     }
   } catch (error) {
     next(error);
@@ -135,7 +136,7 @@ profileRouter.delete("/:userName/experiences/:exId", async (req, res, next) => {
 
 profileRouter.post("/", async (req, res, next) => {
   try {
-    const newprofile = new profileModel(req.body);
+    const newprofile = new profile(req.body);
     const { _id } = await newprofile.save();
     res.status(201).send({ _id });
   } catch (error) {
@@ -145,8 +146,8 @@ profileRouter.post("/", async (req, res, next) => {
 
 profileRouter.get("/", async (req, res, next) => {
   try {
-    const profile = await profileModel.find();
-    res.send(profile);
+    const profiles = await profile.find();
+    res.send(profiles);
   } catch (error) {
     next(error);
   }
@@ -154,7 +155,7 @@ profileRouter.get("/", async (req, res, next) => {
 
 profileRouter.get("/:userId", async (req, res, next) => {
   try {
-    const eachprofile = await profileModel.findById(req.params.userId);
+    const eachprofile = await profile.findById(req.params.userId);
     if (eachprofile) res.send(eachprofile);
     else
       next(
@@ -170,7 +171,7 @@ profileRouter.get("/:userId", async (req, res, next) => {
 
 profileRouter.put("/:userId", async (req, res, next) => {
   try {
-    const updatedprofile = await profileModel.findByIdAndUpdate(
+    const updatedprofile = await profile.findByIdAndUpdate(
       req.params.userId,
       req.body,
       { new: true }
@@ -187,9 +188,7 @@ profileRouter.put("/:userId", async (req, res, next) => {
 
 profileRouter.delete("/:userId", async (req, res, next) => {
   try {
-    const removeprofile = await profileModel.findByIdAndDelete(
-      req.params.userId
-    );
+    const removeprofile = await profile.findByIdAndDelete(req.params.userId);
     if (removeprofile)
       res.status(204).send({ message: "Profile deleted successfully" });
     else
