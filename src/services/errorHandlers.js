@@ -1,20 +1,38 @@
-export const notFoundHandler = (err, req, res, next) => {
+export const badrequest = (err, req, res, next) => {
+	if (err.status === 400) {
+		res.status(400).send(err.message);
+	} else {
+		next(err);
+	}
+};
+export const unauther = (err, req, res, next) => {
+	if (err.status === 401) {
+		res.status(401).send(err.message);
+	} else {
+		next(err);
+	}
+};
+
+export const notfound = (err, req, res, next) => {
+	console.log('err', err);
 	if (err.status === 404) {
-		res.status(err.status).send({ message: err.message || 'Not found!' });
+		res.status(404).send({ status: 'failed', message: err.message });
 	} else {
 		next(err);
 	}
 };
-
-export const badRequestHandler = (err, req, res, next) => {
-	if (err.status === 400 || err.name === 'ValidationError') {
-		res.status(400).send({ message: err.errors || 'Bad Request!' });
+export const forbiden = (err, req, res, next) => {
+	if (err.status === 403) {
+		res.status(403).send('not AUTHORIZED');
 	} else {
 		next(err);
 	}
 };
-
-export const genericErrorHandler = (err, req, res, next) => {
+export const serverside = (err, req, res, next) => {
 	console.log(err);
-	res.status(500).send({ message: 'Generic Server Error!' });
+	if (err.status === 500) {
+		res.status(500).send('server error');
+	} else {
+		next(err);
+	}
 };
