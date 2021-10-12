@@ -11,7 +11,7 @@ import {
 	unauther,
 } from './services/errorHandlers.js';
 
-import profileUsersRouter from './services/profiles/index.js';
+import profileRouter from './services/profiles/index.js';
 
 const server = express();
 
@@ -23,7 +23,7 @@ server.use(cors());
 server.use(express.json());
 
 // ************************* ROUTES ************************************
-server.use('/user', profileUsersRouter);
+server.use('/profile', profileRouter);
 // ************************** ERROR HANDLERS ***************************
 
 server.use(unauther);

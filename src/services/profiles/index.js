@@ -7,9 +7,9 @@ import { fileIsRequired } from '../validationfileType.js';
 import profileModel from './profileSchema.js';
 import { getPdfReadableStream } from './pdf.js';
 import { pipeline } from 'stream';
-const profileUsersRouter = express.Router();
+const profileRouter = express.Router();
 
-profileUsersRouter.post(
+profileRouter.post(
 	'/',
 	parseFile.single('image'),
 	fileIsRequired,
@@ -52,12 +52,12 @@ profileUsersRouter.post(
 		}
 	},
 );
-profileUsersRouter.get('/', async (req, res, next) => {
+profileRouter.get('/', async (req, res, next) => {
 	const users = await profileModel.find();
 	res.json({ users: users }).status(200);
 });
 
-profileUsersRouter.get('/:userId', async (req, res, next) => {
+profileRouter.get('/:userId', async (req, res, next) => {
 	try {
 		const id = req.params.userId;
 		const user = await profileModel.findById(id);
@@ -70,7 +70,7 @@ profileUsersRouter.get('/:userId', async (req, res, next) => {
 		next(error);
 	}
 });
-profileUsersRouter.put(
+profileRouter.put(
 	'/:userId',
 	parseFile.single('image'),
 	fileIsRequired,
@@ -147,14 +147,14 @@ profileUsersRouter.put(
 		}
 	},
 );
-profileUsersRouter.delete('/:userId', async (req, res, next) => {
+profileRouter.delete('/:userId', async (req, res, next) => {
 	try {
 		const user = await profileModel.findByIdAndDelete(req.params.userId);
 		res.send('deleted');
 	} catch (error) {}
 });
 
-profileUsersRouter.post(
+profileRouter.post(
 	'/:userId/picture',
 	parseFile.single('image'),
 	fileIsRequired,
@@ -192,7 +192,7 @@ profileUsersRouter.post(
 		}
 	},
 );
-profileUsersRouter.get('/:userId/cv', async (req, res, next) => {
+profileRouter.get('/:userId/cv', async (req, res, next) => {
 	try {
 		const users = await profileModel.find();
 		const currentProfile = users.find(
@@ -218,4 +218,4 @@ profileUsersRouter.get('/:userId/cv', async (req, res, next) => {
 	}
 });
 
-export default profileUsersRouter;
+export default profileRouter;
