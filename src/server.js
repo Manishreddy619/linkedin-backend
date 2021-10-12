@@ -4,8 +4,6 @@ import listEndpoints from 'express-list-endpoints';
 import cors from 'cors';
 //import experienceRoutes from "./services/profiles/index.js";
 
-import profileRouter from './services/profiles/index.js';
-
 import {
 	badrequest,
 	serverside,
