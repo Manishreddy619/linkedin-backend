@@ -118,23 +118,30 @@ profileRouter.put('/:profileName/experiences/:exId', async (req, res, next) => {
 				.send(`the profile name with ${req.params.profileName} was not found.`);
 		}
 	} catch (error) {
-		console.log(error);
+		next(error);
 	}
 });
-profileRouter.delete('/:userName/experiences/:exId', async (req, res, next) => {
-	try {
-		const getUser = await profile.find();
-		if (getUser) {
-			const user = getUser.find(
-				(usr) => usr.username === req.params.profileName,
-			);
-			if (user) {
-				const delExp = await experience.findByIdAndDelete(req.params.exId);
-				res.send('exp deleted');
+profileRouter.delete(
+	'/:profileName/experiences/:exId',
+	async (req, res, next) => {
+		try {
+			const getUser = await profileModel.find();
+			if (getUser) {
+				const user = getUser.find(
+					(usr) => usr.username === req.params.profileName,
+				);
+				if (user) {
+					const delExp = await experienceModel.findByIdAndDelete(
+						req.params.exId,
+					);
+					res.send('exp deleted');
+				}
 			}
+		} catch (error) {
+			next(error);
 		}
-	} catch (error) {}
-});
+	},
+);
 //export default experienceRoutes;
 
 profileRouter.post(
@@ -182,6 +189,7 @@ profileRouter.post(
 );
 profileRouter.get('/', async (req, res, next) => {
 	const users = await profileModel.find();
+
 	res.json({ users: users }).status(200);
 });
 
@@ -189,7 +197,20 @@ profileRouter.get('/:userId', async (req, res, next) => {
 	try {
 		const id = req.params.userId;
 		const user = await profileModel.findById(id);
+		const experiences = await experienceModel.find();
+		const { username } = user;
 		if (user) {
+			const userExperiences = experiences.filter(
+				(ex) => ex.username === username,
+			);
+			if (userExperiences) {
+				const userDetails = await profileModel.findByIdAndUpdate(
+					req.params.userId,
+					{ $push: { experiences: userExperiences } },
+					{ new: true },
+				);
+				res.status(201).send(userDetails);
+			}
 			res.send(user).status(200);
 		} else {
 			next(createHttpError(404, `user with id ${id} not found!`));
