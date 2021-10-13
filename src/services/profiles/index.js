@@ -288,17 +288,6 @@ profileRouter.get('/:userId', async (req, res, next) => {
 		const experiences = await experienceModel.find();
 		const { username } = user;
 		if (user) {
-			const userExperiences = experiences.filter(
-				(ex) => ex.username === username,
-			);
-			if (userExperiences) {
-				const userDetails = await profileModel.findByIdAndUpdate(
-					req.params.userId,
-					{ $push: { experiences: userExperiences } },
-					{ new: true },
-				);
-				res.status(201).send(userDetails);
-			}
 			res.send(user).status(200);
 		} else {
 			next(createHttpError(404, `user with id ${id} not found!`));
