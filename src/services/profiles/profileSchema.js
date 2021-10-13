@@ -14,8 +14,8 @@ const linkedinProfileSchema = new Schema(
 		bio: { type: String, required: true },
 		title: { type: String, required: true },
 		area: { type: String, required: true },
-		image: { type: String, required: true },
 		username: { type: String, required: true },
+		image: { type: String },
 		experiences: [{ type: Object }],
 	},
 
