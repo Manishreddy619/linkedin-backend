@@ -35,8 +35,15 @@ profileRouter.post(
 					};
 
 					const newExperience = new experienceModel(myObj);
-					const { _id } = await newExperience.save();
-					res.status(201).send(newExperience);
+					const exp = await newExperience.save();
+					if (exp) {
+						const userDetails = await profileModel.findByIdAndUpdate(
+							getPname._id,
+							{ $push: { experiences: exp } },
+							{ new: true },
+						);
+						res.status(201).send(newExperience);
+					}
 				} else {
 					res
 						.status(401)
@@ -285,8 +292,8 @@ profileRouter.get('/:userId', async (req, res, next) => {
 	try {
 		const id = req.params.userId;
 		const user = await profileModel.findById(id);
-		const experiences = await experienceModel.find();
-		const { username } = user;
+		// const experiences = await experienceModel.find();
+		// const { username } = user;
 		if (user) {
 			res.send(user).status(200);
 		} else {
