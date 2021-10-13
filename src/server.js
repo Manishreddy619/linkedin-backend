@@ -33,7 +33,7 @@ server.use(forbiden);
 server.use(serverside);
 
 mongoose.connect(process.env.MONGO_CONNECTION); //mongodb+srv://manish:mani@cluster0.jo5x0.mongodb.net/test
-
+/// this is mongo connection
 mongoose.connection.on('connected', () => {
 	console.log('Successfully connected to Mongo!');
 	server.listen(port, () => {
