@@ -217,5 +217,218 @@ profileRouter.get('/:userId/cv', async (req, res, next) => {
 		next(error);
 	}
 });
+profileRouter.post(
+	'/:username/experiences',
+	parseFile.single('image'),
+	fileIsRequired,
+	async (req, res, next) => {
+		try {
+			const users = await profileModel.find();
+			if (users) {
+				const getPname = users.find(
+					(usr) => usr.username === req.params.username,
+				);
+				console.log(getPname);
+				if (getPname) {
+					const myObj = {
+						...req.body,
+						username: req.params.username,
+						image: req.file.path,
+					};
 
+					const newExperience = new experienceModel(myObj);
+					const { _id } = await newExperience.save();
+					res.status(201).send(newExperience);
+				} else {
+					res
+						.status(401)
+						.send(
+							`the profile name with ${req.params.username} was not found.`,
+						);
+				}
+			}
+		} catch (error) {
+			console.log(error);
+		}
+	},
+);
+profileRouter.get('/:username/experiences', async (req, res, next) => {
+	try {
+		const users = await profileModel.find();
+		if (users) {
+			const userExists = users.find(
+				(usr) => usr.username === req.params.username,
+			);
+			if (userExists) {
+				const userExperiences = await experienceModel.find();
+				if (userExperiences) {
+					const experiences = userExperiences.filter(
+						(ex) => ex.username === req.params.username,
+					);
+					res.send(experiences);
+				} else {
+					res.send(`username  ${req.params.username} not found`);
+				}
+			} else {
+				res.send(`username  ${req.params.username} not found`);
+			}
+		}
+	} catch (error) {
+		next(error);
+	}
+});
+profileRouter.get('/:username/experiences/:exId', async (req, res, next) => {
+	try {
+		const getPName = await profileModel.find();
+		if (getPName) {
+			const user = getPName.find((usr) => usr.username === req.params.username);
+
+			if (user) {
+				const exp = await experienceModel.findById(req.params.exId);
+				if (exp) {
+					res.status(200).send(exp);
+				}
+			} else {
+				res.send(`experience id with ${req.params.exId} not found`);
+			}
+		} else {
+			res
+				.status(401)
+				.send(`the profile name with ${req.params.username} was not found.`);
+		}
+	} catch (error) {
+		console.log(error);
+	}
+});
+profileRouter.put(
+	'/:username/experiences/:exId',
+	parseFile.single('image'),
+	fileIsRequired,
+	async (req, res, next) => {
+		try {
+			const getPName = await profileModel.find();
+			if (getPName) {
+				const user = getPName.find(
+					(usr) => usr.username === req.params.username,
+				);
+
+				if (user) {
+					const myObj = {
+						...req.body,
+						username: req.params.username,
+						image: req.file.path,
+					};
+
+					const updateExp = await experienceModel.findByIdAndUpdate(
+						req.params.exId,
+						myObj,
+						{ new: true },
+					);
+					if (updateExp) {
+						res.status(200).send(updateExp);
+					}
+				} else {
+					res.send(`experience id with ${req.params.exId} not found`);
+				}
+			} else {
+				res
+					.status(401)
+					.send(`the profile name with ${req.params.username} was not found.`);
+			}
+		} catch (error) {
+			next(error);
+		}
+	},
+);
+profileRouter.delete('/:username/experiences/:exId', async (req, res, next) => {
+	try {
+		const getUser = await profileModel.find();
+		if (getUser) {
+			const user = getUser.find((usr) => usr.username === req.params.username);
+			if (user) {
+				const delExp = await experienceModel.findByIdAndDelete(req.params.exId);
+				res.send('exp deleted');
+			}
+		}
+	} catch (error) {
+		next(error);
+	}
+});
+profileRouter.post(
+	'/:username/experiences/:exId/picture',
+	parseFile.single('image'),
+	fileIsRequired,
+	async (req, res, next) => {
+		try {
+			const users = await profileModel.find();
+			if (users) {
+				const getPname = users.find(
+					(usr) => usr.username === req.params.username,
+				);
+				console.log(getPname);
+				if (getPname) {
+					const myObj = { image: req.file.path };
+					const experience = await experienceModel.findByIdAndUpdate(
+						req.params.exId,
+						myObj,
+						{ new: true },
+					);
+					if (experience) {
+						res.send(experience).status(201);
+					} else {
+						res
+							.status(401)
+							.send(`the profile name with ${req.params.exId} was not found.`);
+					}
+				} else {
+					res
+						.status(401)
+						.send(
+							`the profile name with ${req.params.username} was not found.`,
+						);
+				}
+			}
+		} catch (error) {
+			next(error);
+		}
+	},
+);
+profileRouter.get(
+	'/:username/experiences/download/csv',
+	async (req, res, next) => {
+		try {
+			res.setHeader('Content-Disposition', `attachment; filename=books.csv`);
+
+			const users = await profileModel.find();
+			if (users) {
+				const userExists = users.find(
+					(usr) => usr.username === req.params.username,
+				);
+				if (userExists) {
+					const userExperiences = await experienceModel.find();
+					if (userExperiences) {
+						const experiences = userExperiences.filter(
+							(ex) => ex.username === req.params.username,
+						);
+
+						const source = JSON.stringify(experiences);
+						const transform = new json2csv.Transform({
+							fields: ['role', 'company', 'description', 'area', 'username'],
+						});
+						const destination = res;
+						pipeline(source, transform, destination, (err) => {
+							if (err) next(err);
+						});
+					} else {
+						res.send(`username  ${req.params.username} not found`);
+					}
+				} else {
+					res.send(`username  ${req.params.username} not found`);
+				}
+			}
+		} catch (error) {
+			next(error);
+		}
+	},
+);
 export default profileRouter;
