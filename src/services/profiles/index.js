@@ -147,6 +147,81 @@ profileRouter.put(
 		}
 	},
 );
+profileRouter.put(
+	'/profiles/:userId/profile',
+	profileValidator,
+	async (req, res, next) => {
+		try {
+			const id = req.params.userId;
+			const user = await profileModel.findById(id);
+			if (user) {
+				const errors = validationResult(req);
+				if (!errors.isEmpty()) {
+					next(createHttpError(400, { message: errors }));
+				} else {
+					const { name, surname, email, bio, title, area, username } = req.body;
+					const users = await profileModel.find();
+					const user = await profileModel.findById(id);
+					const newUser = {
+						...user.toObject(),
+						name,
+						surname,
+						email,
+						bio,
+						title,
+						area,
+						username,
+					};
+					if (user.username === username) {
+						const modifiedProfile = await profileModel.findByIdAndUpdate(
+							id,
+							newUser,
+							{
+								new: true,
+							},
+						);
+						if (modifiedProfile) {
+							res.send(modifiedProfile);
+						} else {
+							next(createHttpError(404, `user with id ${id} not found!`));
+						}
+					}
+					if (user.username !== username) {
+						let userNameExists = users.find(
+							(user) => user.username === username,
+						);
+
+						if (userNameExists) {
+							next(
+								createHttpError(400, {
+									message: 'username already exists try with another',
+								}),
+							);
+						} else {
+							const modifiedProfile = await profileModel.findByIdAndUpdate(
+								id,
+								newUser,
+								{
+									new: true,
+								},
+							);
+							if (modifiedProfile) {
+								res.send(modifiedProfile);
+							} else {
+								next(createHttpError(404, `user with id ${id} not found!`));
+							}
+						}
+					}
+				}
+			} else {
+				next(createHttpError(404, `user with id ${id} not found!`));
+			}
+		} catch (error) {
+			next(error);
+		}
+	},
+);
+
 profileRouter.delete('/:userId', async (req, res, next) => {
 	try {
 		const user = await profileModel.findByIdAndDelete(req.params.userId);
