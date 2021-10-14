@@ -8,7 +8,7 @@ import profileModel from './profileSchema.js';
 import { getPdfReadableStream } from './pdf.js';
 import { pipeline } from 'stream';
 const profileRouter = express.Router();
-
+import experienceModel from './experienceSchema.js';
 profileRouter.post(
 	'/',
 	parseFile.single('image'),
