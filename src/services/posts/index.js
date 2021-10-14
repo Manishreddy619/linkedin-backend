@@ -141,11 +141,9 @@ posts.post('/:postId/comment',async(req,res,next)=>{
 })
 posts.get('/:postId/comment',async(req,res,next)=>{
     try {
-        const postId=req.params.postId
-        const post=await postModel.findById(postId)
-        const username=post.username
-        const comments=await commentModel.find({'postWithUser.user.username':username})
-        res.send(comments)
+        const comments=await commentModel.find()
+        const thisPostComments=comments.filter((comment)=>comment.postWithUser._id.toString()===req.params.postId.toString())
+        res.send(thisPostComments)
     } catch (error) {
         next(error)
     }
