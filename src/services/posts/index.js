@@ -182,11 +182,11 @@ posts.post('/:postId/like',async(req,res,next)=>{
         const{id}=req.body
         const isLiked=await postModel.findOne({_id:req.params.postId,likes:id})
         if(isLiked){
-            await postModel.findByIdAndUpdate(req.params.postId,{$pull:{likes:id}})
-            res.send('UNLIKED')
+            const arrayOfLikes=await postModel.findByIdAndUpdate(req.params.postId,{$pull:{likes:id}},{new:true})
+            res.send(arrayOfLikes)
         }else{
-            await postModel.findByIdAndUpdate(req.params.postId,{$push:{likes:id}})
-            res.send('LIKED')
+            const arrayOfLikes=await postModel.findByIdAndUpdate(req.params.postId,{$push:{likes:id}},{new:true})
+            res.send(arrayOfLikes)
         }
     } catch (error) {
         next(error)
