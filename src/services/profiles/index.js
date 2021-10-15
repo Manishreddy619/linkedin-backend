@@ -152,7 +152,9 @@ profileRouter.delete('/:userId', async (req, res, next) => {
 	try {
 		const user = await profileModel.findByIdAndDelete(req.params.userId);
 		res.send('deleted');
-	} catch (error) {}
+	} catch (error) {
+		next(error);
+	}
 });
 profileRouter.put(
 	'/profiles/:userId/profile',
