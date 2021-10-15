@@ -34,7 +34,8 @@ const corsOpts = {
 		}
 	},
 };
-server.use(cors(corsOpts));
+
+server.use(cors());
 server.use(express.json());
 server.use('/posts', posts);
 //server.use("/profiles", experienceRoutes);
