@@ -147,10 +147,15 @@ profileRouter.put(
 		}
 	},
 );
+
+profileRouter.delete('/:userId', async (req, res, next) => {
+	try {
+		const user = await profileModel.findByIdAndDelete(req.params.userId);
+		res.send('deleted');
+	} catch (error) {}
+});
 profileRouter.put(
-	'/:userId',
-	parseFile.single('image'),
-	fileIsRequired,
+	'/profiles/:userId/profile',
 	profileValidator,
 	async (req, res, next) => {
 		try {
@@ -173,7 +178,6 @@ profileRouter.put(
 						title,
 						area,
 						username,
-						image: req.file?.path,
 					};
 					if (user.username === username) {
 						const modifiedProfile = await profileModel.findByIdAndUpdate(
@@ -224,13 +228,6 @@ profileRouter.put(
 		}
 	},
 );
-profileRouter.delete('/:userId', async (req, res, next) => {
-	try {
-		const user = await profileModel.findByIdAndDelete(req.params.userId);
-		res.send('deleted');
-	} catch (error) {}
-});
-
 profileRouter.post(
 	'/:userId/picture',
 	parseFile.single('image'),
