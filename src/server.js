@@ -22,8 +22,6 @@ const port = process.env.PORT || 3001;
 // ************************* MIDDLEWARES ********************************
 const whitelist = [process.env.FE_DEV_URL, process.env.FE_PROD_URL]; // we are allowing local FE and the deployed FE to access to our API
 
-console.log(whitelist);
-
 const corsOpts = {
 	origin: function (origin, next) {
 		console.log('CURRENT ORIGIN: ', origin);
